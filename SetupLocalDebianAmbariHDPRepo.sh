@@ -33,6 +33,8 @@ fi
 
 FullHostName=private-repo-hwx.chinanorth.cloudapp.chinacloudapi.cn
 
+echo ----------------------------------------------------------------------------------------------
+echo ----------------------------------------------------------------------------------------------
 echo Setting up local debian repo for Abmari and HDP on $FullHostName
 
 regex="([a-z]*.list)$"
@@ -65,6 +67,7 @@ regex="([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)"
 [[ ${stringarray[6]} =~ $regex ]]
 HDP_UTILS_VERSION=${BASH_REMATCH[1]}
 
+LOCAL_REPO_NAME=hwx-mirror-$HDP_STACK_VERSION
 
 setUpLocalHDPDebianRepo()
 {   
@@ -75,7 +78,7 @@ setUpLocalHDPDebianRepo()
     echo "HDP_STACK_VERSION is $HDP_STACK_VERSION"    
     echo "HDP_UTILS_VERSION is $HDP_UTILS_VERSION"    
     
-    cat >/etc/apt/hwx-mirror-$HDP_STACK_VERSION.list <<EOL
+    cat >/etc/apt/$LOCAL_REPO_NAME.list <<EOL
 set nthreads     20
 set base_path    /tmp/hwx-mirror$HDP_STACK_VERSION
 #HDP 2.6
@@ -84,15 +87,15 @@ deb $HDP_REPO_URL HDP main
 deb $HDP_UTILS_REPO_URL HDP-UTILS main
 EOL
    
-    mkdir -p /tmp/hwx-mirror$HDP_STACK_VERSION
+    mkdir -p /tmp/$LOCAL_REPO_NAME
     downloadPackagesLocally
 }
 
 downloadPackagesLocally()
 {
-    apt-mirror /etc/apt/hwx-mirror-$HDP_STACK_VERSION.list  
+    apt-mirror /etc/apt/$LOCAL_REPO_NAME.list  
 
-    SOURCE_FOLDER=/tmp/hwx-mirror$HDP_STACK_VERSION/mirror
+    SOURCE_FOLDER=/tmp/$LOCAL_REPO_NAME/mirror
     cd $SOURCE_FOLDER
   
     ambariPath=$(find . -type d -name "ambari" -print 2>/dev/null -quit)
@@ -103,7 +106,7 @@ downloadPackagesLocally()
     targethdpPath=$(echo $HDP_REPO_URL | awk -F"/HDP" '{print $2}')
     targethdpUtilPath=$(echo $HDP_UTILS_REPO_URL | awk -F"/HDP-UTILS-$HDP_UTILS_VERSION" '{print $2}')    
     
-	# Get path before last slash
+    # Get path before last slash
     pathregex=(.+)\/    
     
     [[ $targetambariPath =~ $pathregex ]]
@@ -189,8 +192,8 @@ validateRepo()
 
 cleanUpTmpDirectories()
 {
-    echo "Cleaning up /tmp/hwx-mirror$HDP_STACK_VERSION"
-    rm -rf /tmp/hwx-mirror$HDP_STACK_VERSION
+    echo Cleaning up /tmp/$LOCAL_REPO_NAME
+    rm -rf /tmp/$LOCAL_REPO_NAME
 }
 
 setUpLocalHDPDebianRepo
