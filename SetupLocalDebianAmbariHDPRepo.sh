@@ -115,7 +115,7 @@ downloadPackagesLocally()
     [[ $targethdpPath =~ $pathregex ]]
     HDP_FOLDER=${BASH_REMATCH[1]}   
     
-    TARGET_FOLDER=/var/spool/apt-mirror/mirror/private-repo-1.hortonworks.com
+    TARGET_FOLDER=/var/hwx/repo
     
     echo Create folder $TARGET_FOLDER/ambari/$AMBARI_FOLDER
     echo Create folder $TARGET_FOLDER/HDP/$HDP_FOLDER
