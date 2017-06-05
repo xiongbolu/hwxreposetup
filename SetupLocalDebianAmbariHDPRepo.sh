@@ -79,7 +79,7 @@ setUpLocalHDPDebianRepo()
     
     cat >/etc/apt/$LOCAL_REPO_NAME.list <<EOL
 set nthreads     20
-set base_path    /tmp/hwx-mirror$HDP_STACK_VERSION
+set base_path    /tmp/$LOCAL_REPO_NAME
 #HDP 2.6
 deb $AMBARI_REPO_URL Ambari main
 deb $HDP_REPO_URL HDP main
