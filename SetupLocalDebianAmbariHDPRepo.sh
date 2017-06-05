@@ -44,24 +44,23 @@ regex="([a-z]*.list)$"
 wget -q $AMBARI_LIST_URL -O $AMBARI_LIST_FILE
 wget -q $HDP_LIST_URL -O $HDP_LIST_FILE
 
-versionregex="^#VERSION_NUMBER=(.*)$"
+versionregex="([^\/]+$)"
 
 ambarifilelines=`cat $AMBARI_LIST_FILE`
 stringarray=($ambarifilelines)
 
-[[ ${stringarray[0]} =~ $versionregex ]]
-AMBARI_STACK_VERSION=${BASH_REMATCH[1]}
-
 AMBARI_REPO_URL=${stringarray[2]}
+[[ $AMBARI_REPO_URL =~ $versionregex ]]
+AMBARI_STACK_VERSION=${BASH_REMATCH[0]}
 
 hdpfilelines=`cat $HDP_LIST_FILE`
 stringarray=($hdpfilelines)
 
-[[ ${stringarray[0]} =~ $versionregex ]]
-HDP_STACK_VERSION=${BASH_REMATCH[1]}
-
 HDP_REPO_URL=${stringarray[2]}
 HDP_UTILS_REPO_URL=${stringarray[6]}
+
+[[ $HDP_REPO_URL =~ $versionregex ]]
+HDP_STACK_VERSION=${BASH_REMATCH[0]}
 
 regex="([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)"
 [[ ${stringarray[6]} =~ $regex ]]
