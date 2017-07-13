@@ -66,7 +66,7 @@ regex="([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)"
 [[ ${stringarray[6]} =~ $regex ]]
 HDP_UTILS_VERSION=${BASH_REMATCH[1]}
 
-LOCAL_REPO_NAME=hwx-mirror-$HDP_STACK_VERSION
+LOCAL_REPO_NAME=hwx-$AMBARI_STACK_VERSION-$HDP_STACK_VERSION
 
 setUpLocalHDPDebianRepo()
 {   
@@ -158,22 +158,23 @@ startAndValidateLocalHDPDebianRepo()
     hdpUtilsUrl=http://$FullHostName/HDP-UTILS-$HDP_UTILS_VERSION$hdpUtilPath
    
     validateRepo $ambariUrl
-    validateRepo $hdpRepoUrl
-    validateRepo $hdpUtilsUrl
    
-    echo "Creating ambari.list and hdp.list files"
+    echo "Creating ambari.list file"
     cat >/var/www/html/ambari/$ambariPath/ambari.list <<EOL
 #VERSION_NUMBER=$AMBARI_STACK_VERSION
 deb $ambariUrl Ambari main
 EOL
-
+    validateRepo $ambariUrl/ambari.list
+    
+    validateRepo $hdpRepoUrl
+    validateRepo $hdpUtilsUrl
+    
+    echo "Creating hdp.list file"
     cat >/var/www/html/HDP/$hdpPath/hdp.list <<EOL
 #VERSION_NUMBER=$HDP_STACK_VERSION
 deb $hdpRepoUrl HDP main
 deb $hdpUtilsUrl HDP-UTILS main 
-EOL
-   
-    validateRepo $ambariUrl/ambari.list
+EOL 
     validateRepo $hdpRepoUrl/hdp.list
 }
 
