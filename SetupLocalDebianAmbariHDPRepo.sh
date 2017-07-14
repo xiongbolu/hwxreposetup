@@ -52,6 +52,11 @@ stringarray=($ambarifilelines)
 AMBARI_REPO_URL=${stringarray[2]}
 [[ $AMBARI_REPO_URL =~ $versionregex ]]
 AMBARI_STACK_VERSION=${BASH_REMATCH[0]}
+SYNC_AMBARI=
+if [ -z "$AMBARI_STACK_VERSION" ]
+then
+   SYNC_AMBARI=#
+fi
 
 hdpfilelines=`cat $HDP_LIST_FILE`
 stringarray=($hdpfilelines)
@@ -65,6 +70,18 @@ HDP_STACK_VERSION=${BASH_REMATCH[0]}
 regex="([0-9]+\.[0-9]+\.[0-9]+\.[0-9]+)"
 [[ ${stringarray[6]} =~ $regex ]]
 HDP_UTILS_VERSION=${BASH_REMATCH[1]}
+
+SYNC_HDP=
+if [ -z "$HDP_STACK_VERSION" ]
+then
+   SYNC_HDP=#
+fi
+
+SYNC_HDP_UTIL=
+if [ -z "$HDP_UTILS_VERSION" ]
+then
+   SYNC_HDP_UTIL=#
+fi
 
 LOCAL_REPO_NAME=hwx-$AMBARI_STACK_VERSION-$HDP_STACK_VERSION
 
@@ -81,9 +98,9 @@ setUpLocalHDPDebianRepo()
 set nthreads     20
 set base_path    /tmp/$LOCAL_REPO_NAME
 #HDP 2.6
-deb $AMBARI_REPO_URL Ambari main
-deb $HDP_REPO_URL HDP main
-deb $HDP_UTILS_REPO_URL HDP-UTILS main
+$SYNC_AMBARI deb $AMBARI_REPO_URL Ambari main
+$SYNC_HDP deb $HDP_REPO_URL HDP main
+$SYNC_HDP_UTIL deb $HDP_UTILS_REPO_URL HDP-UTILS main
 EOL
    
     mkdir -p /tmp/$LOCAL_REPO_NAME
